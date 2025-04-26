@@ -18,7 +18,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '16'
+          node-version: '20'
 
       - name: Install dependencies
         run: yarn install
@@ -35,7 +35,7 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t rentee-backend-image .
+          docker build -t rentee-backend:latest .
 
   deploy:
     runs-on: ubuntu-latest
