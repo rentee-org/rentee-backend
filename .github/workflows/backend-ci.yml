@@ -1,0 +1,174 @@
+name: Backend CI/CD
+
+on:
+  push:
+    paths:
+      - 'backend/**'
+    branches: [main, dev]
+
+jobs:
+  build-docker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to GHCR
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.RENTEE_GHCR_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: ./backend
+          push: true
+          tags: ghcr.io/${{ github.repository_owner }}/rentee-backend:latest
+
+  build-node:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+      
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
+  
+      - name: Cache yarn dependencies
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+  
+      - name: Install Dependencies
+        run: yarn install --frozen-lockfile --ignore-engines
+
+  deploy-azure:
+    runs-on: ubuntu-latest
+    needs: build-docker  # Ensures image is built and pushed first
+    # environment: production
+    steps:
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'rentee-backend-app'  # Must match the name in your Terraform config
+          images: 'ghcr.io/${{ github.repository_owner }}/rentee-backend:latest'
+
+      - name: Azure Logout
+        run: |
+          az logout
+
+  # build-deploy-digitalocean:
+  #   runs-on: ubuntu-latest
+  #   defaults:
+  #     run:
+  #       working-directory: ./backend
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
+
+  #     - name: Set up Node
+  #       uses: actions/setup-node@v3
+  #       with:
+  #         node-version: '20'
+      
+  #     - name: Get yarn cache directory path
+  #       id: yarn-cache-dir-path
+  #       run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
+  
+  #     - name: Cache yarn dependencies
+  #       uses: actions/cache@v3
+  #       with:
+  #         path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+  #         key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+  #         restore-keys: |
+  #           ${{ runner.os }}-yarn-
+  
+  #     - name: Install Dependencies
+  #       run: |
+  #         yarn install --frozen-lockfile --ignore-engines
+  #         node-version: '20'
+          
+  #     - name: Set up Docker Buildx
+  #       uses: docker/setup-buildx-action@v2
+
+  #     - name: Login to GHCR
+  #       uses: docker/login-action@v2
+  #       with:
+  #         registry: ghcr.io
+  #         username: ${{ github.repository_owner }}
+  #         password: ${{ secrets.RENTEE_GHCR_TOKEN }}
+
+  #     - name: Build and push Docker image
+  #       uses: docker/build-push-action@v4
+  #       with:
+  #         context: ./backend
+  #         push: true
+  #         tags: ghcr.io/${{ github.repository_owner }}/rentee-backend:latest
+
+  #     - name: Deploy to DigitalOcean
+  #       uses: appleboy/ssh-action@master
+  #       with:
+  #         host: ${{ secrets.SERVER_IP }}
+  #         username: ${{ secrets.SERVER_USER }}
+  #         key: ${{ secrets.SSH_PRIVATE_KEY }}
+  #         script: |
+  #           docker pull ghcr.io/${{ github.repository_owner }}/rentee-backend:latest
+  #           docker stop rentee-backend || true
+  #           docker rm rentee-backend || true
+  #           docker run -d \
+  #             --name rentee-backend \
+  #             --restart unless-stopped \
+  #             -p 3000:3000 \
+  #             ghcr.io/${{ github.repository_owner }}/rentee-backend:latest
+
+  # deploy-railway:
+  #   runs-on: ubuntu-latest
+  #   # needs: build-deploy-digitalocean
+  #   container: ghcr.io/railwayapp/cli:latest
+  #   env:
+  #     RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
+      
+  #     - name: Install Railway CLI
+  #       run: |
+  #         curl -fsSL https://railway.app/install.sh | sh
+
+  #     - name: Check Railway Token
+  #       run: |
+  #         echo "RAILWAY_TOKEN length: ${#RAILWAY_TOKEN}"
+  #         if [ -z "$RAILWAY_TOKEN" ]; then
+  #           echo "::error::Railway token is empty"
+  #           exit 1
+  #         fi
+  #       env:
+  #         RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+
+  #     - name: Deploy to Railway
+  #       run: railway up
+  #       working-directory: ./backend
+  #       env:
+  #         RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
