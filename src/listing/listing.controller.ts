@@ -59,10 +59,37 @@ export class ListingController {
   @ApiQuery({ name: 'status', required: false, enum: ['available', 'rented', 'inactive'] })
   @ApiQuery({ name: 'page', required: false })
   @ApiQuery({ name: 'limit', required: false })
+  @ApiOkResponse({
+    description: 'Paginated list of listings',
+    schema: {
+      example: {
+        currentPage: 1,
+        totalPages: 5,
+        totalItems: 48,
+        items: [
+          {
+            id: 1,
+            title: 'Portable Generator',
+            category: 'Tools',
+            price: 2500,
+            status: 'available',
+            images: ['https://...'],
+            createdAt: '2025-03-25T10:00:00Z',
+            owner: {
+              id: 2,
+              name: 'John Doe',
+              email: 'john@example.com',
+              role: 'owner',
+            },
+          },
+        ],
+      },
+    },
+  })
+
   findFiltered(@Query() query: FilterListingDto) {
     return this.listingService.findFiltered(query);
   }
-
 
   // @UseGuards(JwtAuthGuard)
   // @Roles(Role.OWNER)
@@ -81,6 +108,11 @@ export class ListingController {
       },
     },
   })
+  @ApiOkResponse({
+    description: 'Image uploaded successfully',
+    type: ApiResponse,
+  })    
+    
   async uploadImage(@UploadedFile() file: File): Promise<ApiResponse<UploadApiResponse>> {
     const result = await this.uploadService.uploadImage(file);
     let response: ApiResponse<UploadApiResponse> = {
