@@ -76,9 +76,9 @@ export class UsersService {
     try {
       // Check if the user already exists
       const existingUser = this.usersRepository.findOne({ where: { email: createUserDto.email } });
-      if (existingUser) throw new Error('User already exists');
-      // Check if the user data is valid
-
+      console.log('existing user:', JSON.stringify(existingUser));
+      if (!existingUser) throw new Error('User already exists');
+      
       if (!createUserDto) throw new Error('Invalid user data');
       const user = this.usersRepository.create(createUserDto);
       return this.usersRepository.save(user);

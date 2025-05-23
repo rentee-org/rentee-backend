@@ -7,6 +7,7 @@ import databaseConfig from '../config/database.config';
     TypeOrmModule.forRootAsync({
       useFactory: () => {
         const config = databaseConfig();
+        console.log('Database configuration:', config);
         return {
           ...config,
           type: config.type as 'postgres', // Adjust this based on your database type

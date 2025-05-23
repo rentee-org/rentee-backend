@@ -24,6 +24,7 @@ export class AuthService {
   async register(model: RegisterDto): Promise<ApiResponse<string>> {
     
     const exists = await this.userService.findByEmail(model.email);
+    console.log('existing user:', JSON.stringify(exists));
       
     if (exists) throw new BadRequestException('Email already registered');
 

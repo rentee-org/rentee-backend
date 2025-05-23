@@ -20,6 +20,7 @@ import { Roles } from 'src/auth/decorators/roles.decorator';
 import { Role } from 'src/common/enums/role.enum';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { ApiResponse } from '@nestjs/swagger';
+import { Public } from 'src/auth/decorators/public.decorator';
 
 @Controller('users')
 export class UsersController {
@@ -42,7 +43,8 @@ export class UsersController {
     return this.userService.updateProfile(req.user.userId, dto);
   }
 
-  @Roles(Role.ADMIN)
+  // @Roles(Role.ADMIN)
+  @Public()
   @Get()
   async getAllUsers() {
     return this.userService.findAll();
