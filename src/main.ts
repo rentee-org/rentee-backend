@@ -7,7 +7,16 @@ dotenv.config();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.enableCors();
+  // Enable CORS for production
+  // app.enableCors();
+  app.enableCors({
+    origin: process.env.FRONTEND_URL || true,
+    credentials: true,
+  });
+
+  // Use Railway's PORT environment variable
+  const port = process.env.PORT || 3000;
+  await app.listen(port, '0.0.0.0');
 
   const config = new DocumentBuilder()
     .setTitle('Rentee API')
@@ -25,6 +34,8 @@ async function bootstrap() {
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, documentFactory);
+
+
 
   await app.listen(process.env.PORT ?? 3000);
   console.log(`Application is running on: ${await app.getUrl()}`);
