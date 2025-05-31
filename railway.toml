@@ -1,0 +1,97 @@
+[build]
+builder = "dockerfile"
+
+[deploy]
+healthcheckPath = "/health"
+healthcheckTimeout = 300
+restartPolicyType = "on_failure"
+replicas = 1
+
+[environment.production]
+variables = [
+    "NODE_ENV=development",
+    "PORT=3000",
+    "APP_NAME=Rentee_API",
+    ,"APP_DESCRIPTION=Rentee_API"
+    "APP_VERSION=1.0.0",
+    "APP_URL=http://localhost:3000",
+
+    "DB_HOST=localhost",
+DB_PORT=5432
+DB_USERNAME=nc_graphql
+DB_PASSWORD=S3cret
+DB_NAME=Rentee.db.dev
+RUN_MIGRATIONS=true
+
+SB_DB_HOST=aws-0-eu-west-2.pooler.supabase.com
+DB_PORT=5432
+SB_DB_USERNAME=postgres.irkizyimlfhtkaajujna
+SB_DB_PASSWORD=WI5yjPvGMIqiB0cl
+SB_DB_NAME=postgres
+
+DATABASE_URL="postgresql://postgres.irkizyimlfhtkaajujna:3:yFbf27+J>g9Ws#$@aws-0-eu-west-2.pooler.supabase.com:6543/postgres?pgbouncer=true&ssl=true"
+
+DIRECT_URL="postgresql://postgres.irkizyimlfhtkaajujna:3:yFbf27+J>g9Ws#$@aws-0-eu-west-2.pooler.supabase.com:5432/postgres"
+
+Railway_DB_URL=postgresql://postgres:fkEJLjGIsNlRJaQFQyBaGMAKJGxbkJLl@switchyard.proxy.rlwy.net:21182/railway
+
+"FRONTEND_URL=ttp://localhost:3001"
+EMAIL_HOST=sandbox.smtp.mailtrap.io
+EMAIL_PORT=2525
+EMAIL_USERNAME=9c6fcd1584bc14
+EMAIL_PASSWORD=edb49feff25bdc
+EMAIL_FROM=noreply@Rentee.com
+
+JWT_SECRET=suPer_s3cr3t_keY
+JWT_EXPIRATION=1d
+JWT_ISSUER=Rentee_API
+JWT_AUDIENCE=Rentee_API
+JWT_ALGORITHM=HS256
+JWT_REFRESH_SECRET=suPer_s3cr3t_keY
+JWT_REFRESH_EXPIRATION=7d
+JWT_REFRESH_ISSUER=Rentee_API
+JWT_REFRESH_AUDIENCE=Rentee_API
+
+REDIS_HOST=localhost
+REDIS_PORT=6379
+REDIS_PASSWORD=""
+REDIS_DB=0
+REDIS_URL=redis://localhost:6379/0
+
+AWS_ACCESS_KEY_ID=your_access_key_id
+AWS_SECRET_ACCESS_KEY=your_secret_access_key
+AWS_REGION=your_region
+AWS_BUCKET_NAME=your_bucket_name
+AWS_ENDPOINT=your_endpoint
+AWS_S3_URL=your_s3_url
+AWS_S3_REGION=your_s3_region
+AWS_S3_BUCKET=your_s3_bucket
+AWS_S3_ACCESS_KEY=your_s3_access_key
+AWS_S3_SECRET_KEY=your_s3_secret_key
+AWS_S3_BUCKET_URL=your_s3_bucket_url
+AWS_S3_BUCKET_REGION=your_s3_bucket_region
+AWS_S3_BUCKET_NAME=your_s3_bucket_name
+AWS_S3_BUCKET_ENDPOINT=your_s3_bucket_endpoint
+
+TWILIO_ACCOUNT_SID=your_twilio_account_sid
+TWILIO_AUTH_TOKEN=your_twilio_auth_token
+TWILIO_PHONE_NUMBER=your_twilio_phone_number
+TWILIO_API_KEY=your_twilio_api_key
+TWILIO_API_SECRET=your_twilio_api_secret
+TWILIO_API_SID=your_twilio_api_sid
+TWILIO_API_URL=your_twilio_api_url
+TWILIO_API_VERSION=your_twilio_api_version
+TWILIO_API_REGION=your_twilio_api_region
+TWILIO_API_KEY_SID=your_twilio_api_key_sid
+TWILIO_API_KEY_SECRET=your_twilio_api_key_secret
+TWILIO_API_KEY_SID=your_twilio_api_key_sid
+TWILIO_API_KEY_SECRET=your_twilio_api_key_secret
+TWILIO_API_KEY_SID=your_twilio_api_key_sid
+TWILIO_API_KEY_SECRET=your_twilio_api_key_secret
+
+CLOUDINARY_CLOUD_NAME=dk3yf2tcv
+CLOUDINARY_API_KEY=638766719579387  
+CLOUDINARY_API_SECRET=RiOA2yhsz1TDXxKodePI9zrkf0M
+CLOUDINARY_URL=cloudinary://638766719579387:RiOA2yhsz1TDXxKodePI9zrkf0M@dk3yf2tcv
+
+]

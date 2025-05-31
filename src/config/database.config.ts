@@ -2,10 +2,10 @@ import { registerAs } from '@nestjs/config';
 
 export default registerAs('database', () => {
   // If DATABASE_URL is provided (Railway), use it
-  if (process.env.DATABASE_URL) {
+  if (process.env.Railway_DB_URL) {
     return {
       type: 'postgres',
-      url: process.env.DATABASE_URL,
+      url: process.env.Railway_DB_URL,
       entities: [__dirname + '/../**/*.entity{.ts,.js}'],
       migrations: ['src/migrations/*.ts'],
       synchronize: process.env.NODE_ENV !== 'production',
