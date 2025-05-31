@@ -70,6 +70,13 @@ jobs:
       - name: Install Railway CLI
         run: npm install -g @railway/cli
 
+      - name: Validate Railway Service ID
+        run: |
+          if [ -z "${{ secrets.RAILWAY_SERVICE_ID }}" ]; then
+            echo "Error: RAILWAY_SERVICE_ID is not set or is empty."
+            exit 1
+          fi
+
       - name: Deploy to Railway
         id: deploy
         env:
