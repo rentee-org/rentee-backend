@@ -7,14 +7,11 @@ on:
   pull_request:
     branches:
       - main
+  workflow_dispatch:
 
 env:
   RAILWAY_SERVICE_ID: ${{ secrets.RAILWAY_SERVICE_ID }}
-  DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-  DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
-  GHCR_PAT: ${{ secrets.GHCR_PAT }}
-  RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-  ENV: production
+  NODE_ENV: production
   
 jobs:
   test:
@@ -30,7 +27,7 @@ jobs:
           cache: 'yarn'
 
       - name: Install dependencies
-        run: yarn install
+        run: yarn install --frozen-lockfile
       # - name: Run tests
       #   run: yarn test
 
@@ -43,12 +40,6 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
@@ -63,22 +54,32 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/rentee-backend:latest
             ghcr.io/${{ github.repository_owner }}/rentee-backend:latest
+            ghcr.io/${{ github.repository_owner }}/rentee-backend:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
   deploy:
     runs-on: ubuntu-latest
-    container: ghcr.io/railwayapp/cli:latest
     needs: build-and-push
-    env:
-      SVC_ID: aadf6755-19b1-42ca-87fb-3728ab227437
-      RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
-      - uses: actions/checkout@v3
-      - run: railway up --service=${{ env.SVC_ID }}
-      
-        # run: railway up --service=${{ secrets.RAILWAY_SERVICE_ID }}
-      
-      # - name: Deploy to Railway
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
+
+      - name: Deploy to Railway
+        id: deploy
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: |
+          # Link to the Railway project
+          railway link ${{ secrets.RAILWAY_PROJECT_ID }}
+          
+          # Deploy the service
+          railway up \
+            --service ${{ secrets.RAILWAY_SERVICE_ID }} \
+            --detach \
+            --environment production
