@@ -6,6 +6,7 @@ import { Public } from './auth/decorators/public.decorator';
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
+  @Public()
   @Get('health')
   healthCheck() {
     return { status: 'ok', timestamp: new Date().toISOString() };
