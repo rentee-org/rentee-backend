@@ -11,7 +11,7 @@ WORKDIR /app
 COPY package.json yarn.lock ./
 
 # Install all dependencies
-RUN --mount=type=cache,id=yarn-cache-${CI_COMMIT_REF_SLUG},target=/root/.yarn-cache \
+RUN --mount=type=cache,id=cache-yarn-${CI_COMMIT_REF_SLUG},target=/root/.yarn-cache \
     yarn install --frozen-lockfile --network-timeout 100000 && \
     yarn cache clean
 
@@ -33,7 +33,7 @@ WORKDIR /app
 COPY package.json yarn.lock ./
 
 # Install production dependencies and optimize
-RUN --mount=type=cache,id=yarn-cache-${CI_COMMIT_REF_SLUG},target=/root/.yarn-cache \
+RUN --mount=type=cache,id=cache-yarn-${CI_COMMIT_REF_SLUG},target=/root/.yarn-cache \
     yarn install --production --frozen-lockfile --network-timeout 100000 && \
     yarn cache clean && \
     # Remove unnecessary files from node_modules
