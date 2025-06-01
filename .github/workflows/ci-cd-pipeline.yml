@@ -78,11 +78,11 @@ jobs:
           fi
 
       - name: Deploy to Railway
-        uses: railwayapp/railway-deploy-action@v1.1.0
-        with:
-          railway_token: ${{ secrets.RAILWAY_TOKEN }}
-          service: ${{ secrets.RAILWAY_SERVICE_ID }}
-          environment: production
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: |
+          railway link ${{ secrets.RAILWAY_PROJECT_ID }}
+          railway up --service ${{ secrets.RAILWAY_SERVICE_ID }} --detach --environment production
 
       # - name: Deploy to Railway
       #   id: deploy
