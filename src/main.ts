@@ -13,7 +13,6 @@ async function bootstrap() {
     origin: process.env.FRONTEND_URL || true,
     credentials: true,
   });
-
   
   const config = new DocumentBuilder()
   .setTitle('Rentee API')
@@ -32,6 +31,8 @@ async function bootstrap() {
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, documentFactory);
   
+  // Set global prefix
+  app.setGlobalPrefix('api');
   
   // Use Railway's PORT environment variable
   const port = process.env.PORT || 3000;

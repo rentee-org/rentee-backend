@@ -48,12 +48,37 @@ export class UsersService {
     }
   }
 
-  findAll(): Promise<User[]> {
-    return this.usersRepository.find();
+  findAll(): Promise<UserDto[]> {
+    var users = this.usersRepository.find();
+
+    if (!users) {
+      throw new Error('No users found');
+    }
+
+    // Exclude sensitive information like password
+    // return user dtos instead of user entities
+    let userDto = users.then(users =>
+      users.map(user => {
+        const { password, ...safeUser } = user;
+        return safeUser as UserDto;
+      })
+    );
+
+    return userDto;
   }
 
-  findOne(id: string): Promise<User | null> {
-    return this.usersRepository.findOne({ where: { id } });
+  findOne(id: string): Promise<UserDto | null> {
+    let user = this.usersRepository.findOne({ where: { id } });
+    if (!user) {
+      throw new Error('User not found');
+    }
+    // Exclude sensitive information like password and return user dto
+
+    let userDto = user.then(user => {
+      const { password, ...safeUser } = user;
+      return safeUser as UserDto;
+    });
+    return userDto;
   }
 
   findById(id: string): Promise<User | null> {

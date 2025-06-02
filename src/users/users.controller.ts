@@ -21,6 +21,7 @@ import { Role } from 'src/common/enums/role.enum';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { ApiResponse } from '@nestjs/swagger';
 import { Public } from 'src/auth/decorators/public.decorator';
+import { UserDto } from './dto/user.dto';
 
 @Controller('users')
 export class UsersController {
@@ -52,7 +53,7 @@ export class UsersController {
   
 
   @Get(':id')
-  findOne(@Param('id') id: string): Promise<User | null> {
+  findOne(@Param('id') id: string): Promise<UserDto | null> {
     return this.userService.findOne(id);
   }
 
