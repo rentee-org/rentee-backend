@@ -17,23 +17,31 @@ export class AuditService {
     return this.auditRepository.save(audit);
   }
 
-  create(createAuditDto: CreateAuditDto) {
-    return 'This action adds a new audit';
+  async findAll() {
+    const audits = await this.auditRepository.find();
+    if (!audits || audits.length === 0) {
+      throw new Error('No audits found');
+    }
+    return audits;
   }
 
-  findAll() {
-    return `This action returns all audit`;
+  findOne(id: string) {
+    return this.auditRepository.findOne({
+      where: { id },
+    }).then(audit => {
+      if (!audit) {
+        throw new Error(`Audit with ID ${id} not found`);
+      }
+      return audit;
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} audit`;
-  }
-
-  update(id: number, updateAuditDto: UpdateAuditDto) {
-    return `This action updates a #${id} audit`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} audit`;
+  remove(id: string) {
+    return this.auditRepository.delete(id).then(result => {
+      if (result.affected === 0) {
+        throw new Error(`Audit with ID ${id} not found`);
+      }
+      return { message: 'Audit deleted successfully' };
+    });
   }
 }
