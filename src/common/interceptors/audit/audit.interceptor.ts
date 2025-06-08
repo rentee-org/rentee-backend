@@ -24,6 +24,16 @@ export class AuditInterceptor implements NestInterceptor {
     const url = request.url;
     const body = request.body;
 
+    // check if request is loging and obsfucate sensitive data
+    const isLoggingDisabled = this.reflector.get<boolean>(
+      'disableAuditLogging',
+      context.getHandler(),
+    );
+    if (isLoggingDisabled) {
+      return next.handle();
+    }
+    
+
     return next.handle().pipe(
       tap(async (response) => {
         // Only log if it's a mutation

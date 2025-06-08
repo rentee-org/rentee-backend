@@ -12,6 +12,7 @@ import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { UserDto } from 'src/users/dto/user.dto';
 import { ApiResponse } from 'src/common/dto/response.dto';
+import { AuditService } from 'src/audit/audit.service';
 
 @Injectable()
 export class AuthService {
@@ -19,6 +20,7 @@ export class AuthService {
     private configService: ConfigService,
     private userService: UsersService,
     private jwtService: JwtService,
+    private auditService: AuditService
   ) {}
 
   async register(model: RegisterDto): Promise<ApiResponse<string>> {
@@ -40,9 +42,17 @@ export class AuthService {
     response.message = 'User registered successfully!';
     response.success = true;
     response.data = 'User registered successfully!';
+
+    // Log the registration event
+    await this.auditService.logEvent({
+      action: 'User Registration',
+      userId: user.id,
+      details: `User ${user.email} registered successfully`,
+      entity: 'Registration',
+      ipAddress: ''
+    });
+
     return response;
-    
-    // return { message: 'User registered successfully' };
   }
 
   async validateUser(email: string, password: string): Promise<User> {
@@ -72,6 +82,16 @@ export class AuthService {
     response.message = 'User logged in successfully!';
     response.success = true;
     response.data = { access_token: token, user: safeUser as UserDto };
+
+    // Log the login event
+    await this.auditService.logEvent({
+      action: 'User Login',
+      userId: user.id,
+      details: `User ${user.email} logged in successfully`,
+      entity: 'Login',
+      ipAddress: '' // You can add logic to capture the IP address if needed
+    });
+
     return response;
   }
 

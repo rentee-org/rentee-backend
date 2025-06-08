@@ -17,6 +17,12 @@ export class AuditService {
     return this.auditRepository.save(audit);
   }
 
+  // log events
+  async logEvent(event: CreateAuditDto): Promise<Audit> {
+    const audit = this.auditRepository.create(event);
+    return this.auditRepository.save(audit);
+  }
+
   async findAll() {
     const audits = await this.auditRepository.find();
     if (!audits || audits.length === 0) {

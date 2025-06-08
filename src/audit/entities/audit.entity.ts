@@ -20,6 +20,9 @@ export class Audit {
   @Column({ type: 'jsonb', nullable: true })
   newValue?: any;
 
+  @Column({ nullable: true })
+  details?: string;
+
   @Column()
   ipAddress: string;
 

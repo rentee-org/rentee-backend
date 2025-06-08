@@ -4,5 +4,6 @@ export class CreateAuditDto {
   entity: string;
   oldValue?: any;
   newValue?: any;
+  details?: string;
   ipAddress: string;
 }
