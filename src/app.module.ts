@@ -19,6 +19,7 @@ import { IpMiddleware } from './common/middleware/ip/ip.middleware';
 import { BookingModule } from './booking/booking.module';
 import { PaymentModule } from './payment/payment.module';
 import { ReviewModule } from './review/review.module';
+import { NotificationService } from './common/notification/notification.service';
 
 @Module({
   imports: [
@@ -55,6 +56,7 @@ import { ReviewModule } from './review/review.module';
       provide: APP_GUARD,
       useClass: RolesGuard,    // Second layer
     },
+    NotificationService,
   ],
 })
 export class AppModule {
