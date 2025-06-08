@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { SwaggerCustomOptions } from '@nestjs/swagger/dist/interfaces/swagger-custom-options.interface';
 
 import * as dotenv from 'dotenv';
 dotenv.config();
@@ -8,7 +9,6 @@ dotenv.config();
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   // Enable CORS for production
-  // app.enableCors();
   app.enableCors({
     origin: process.env.FRONTEND_URL || true,
     credentials: true,
@@ -29,7 +29,14 @@ async function bootstrap() {
   )
   .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('docs', app, documentFactory);
+  // Set up Swagger UI at a custom path
+  const customOptions: SwaggerCustomOptions = {
+    swaggerOptions: {
+      persistAuthorization: true, // Keep authentication token
+    },
+    customSiteTitle: 'Rentee API Docs', // Set a custom title
+  };
+  SwaggerModule.setup('docs', app, documentFactory, customOptions);
   
   // Set global prefix
   app.setGlobalPrefix('api');
