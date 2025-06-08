@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -11,9 +11,11 @@ import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { RolesGuard } from './auth/guards/roles.guard';
 import { ListingModule } from './listing/listing.module';
+import { AuditModule } from './audit/audit.module';
 
 import databaseConfig from './config/database.config';
 import cloudinaryConfig from './config/cloudinary.config';
+import { IpMiddleware } from './common/middleware/ip/ip.middleware';
 
 @Module({
   imports: [
@@ -33,6 +35,7 @@ import cloudinaryConfig from './config/cloudinary.config';
     UsersModule,
     AuthModule,
     ListingModule,
+    AuditModule,
   ],
   controllers: [AppController],
   providers: [
@@ -48,4 +51,11 @@ import cloudinaryConfig from './config/cloudinary.config';
     },
   ],
 })
-export class AppModule {}
+export class AppModule {
+  // Global middleware to resolve IP address
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(IpMiddleware)  // Apply the IP middleware globally
+      .forRoutes('*');      // Apply to all routes
+  }
+}

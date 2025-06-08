@@ -1,7 +1,9 @@
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { SwaggerCustomOptions } from '@nestjs/swagger/dist/interfaces/swagger-custom-options.interface';
+import { AuditInterceptor } from './common/interceptors/audit/audit.interceptor'; 
+import { AuditService } from './audit/audit.service';
 
 import * as dotenv from 'dotenv';
 dotenv.config();
@@ -13,7 +15,14 @@ async function bootstrap() {
     origin: process.env.FRONTEND_URL || true,
     credentials: true,
   });
+
+  // Set up global interceptors for auditing
+  // Ensure AuditService is available
+  const auditService = app.get(AuditService);
+  const reflector = app.get(Reflector);
+  app.useGlobalInterceptors(new AuditInterceptor(auditService, reflector));
   
+  // Set up Swagger documentation
   const config = new DocumentBuilder()
   .setTitle('Rentee API')
   .setDescription('The Rentee API for a peer-to-peer rental marketplace')
