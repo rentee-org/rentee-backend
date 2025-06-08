@@ -8,18 +8,26 @@ import { CreateBookingDto } from './dto/create-booking.dto';
 import { UpdateBookingDto } from './dto/update-booking.dto';
 import { Listing } from 'src/listing/entities/listing.entity';
 import { User } from 'src/users/entities/user.entity';
+import { NotificationService } from 'src/common/notification/notification.service';
 
 @Injectable()
 export class BookingService {
-
   constructor(
     @InjectRepository(Booking)
     private bookingRepo: Repository<Booking>,
 
     @InjectRepository(Listing)
-    private listingRepo: Repository<Listing>
+    private listingRepo: Repository<Listing>,
+
+    private notificationService: NotificationService
   ) { }
 
+  /**
+   * Creates a new booking for a listing.
+   * @param dto - The data transfer object containing booking details.
+   * @param renter - The user who is renting the listing.
+   * @returns The created booking.
+   */
   async create(dto: CreateBookingDto, renter: User): Promise<Booking> {
     const listing = await this.listingRepo.findOne({
       where: { id: dto.listingId },
@@ -50,14 +58,24 @@ export class BookingService {
 
     const booking = this.bookingRepo.create({
       listing,
-      renter,
+      renter,  // Ensure renter is set
       startDate: dto.startDate,
       endDate: dto.endDate,
       totalPrice,
       status: BookingStatus.PENDING,
     });
 
-    return this.bookingRepo.save(booking);
+    // save booking
+    await this.bookingRepo.save(booking);
+
+    // Update listing availability
+    listing.isAvailable = false;
+    await this.listingRepo.save(listing);
+
+    // Optionally, you can send a notification to the owner of the listing
+    await this.notificationService.sendBookingNotification(listing.owner.email, booking);
+
+    return booking;
   }
 
   async findAll(): Promise<Booking[]> {

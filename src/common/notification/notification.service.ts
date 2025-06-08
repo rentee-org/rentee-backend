@@ -1,6 +1,7 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
 import { ConfigService } from '@nestjs/config';
+import { Booking } from 'src/booking/entities/booking.entity';
 
 @Injectable()
 export class NotificationService {
@@ -64,5 +65,17 @@ export class NotificationService {
             console.error('Email error:', err);
             throw new InternalServerErrorException('Failed to send email');
         }
+    }
+
+    async sendBookingNotification(to: string, booking: Booking): Promise<void> {
+        const subject = `Booking Confirmation for ${booking.listing.title}`;
+        const template = `
+            <h1>Booking Confirmation</h1>
+            <p>Your booking for <strong>${booking.listing.title}</strong> has been confirmed.</p>
+            <p>Start Date: ${booking.startDate}</p>
+            <p>End Date: ${booking.endDate}</p>
+            <p>Total Price: $${booking.totalPrice}</p>
+        `;
+        await this.sendMail(to, subject, template);
     }
 }
