@@ -16,6 +16,9 @@ import { AuditModule } from './audit/audit.module';
 import databaseConfig from './config/database.config';
 import cloudinaryConfig from './config/cloudinary.config';
 import { IpMiddleware } from './common/middleware/ip/ip.middleware';
+import { BookingModule } from './booking/booking.module';
+import { PaymentModule } from './payment/payment.module';
+import { ReviewModule } from './review/review.module';
 
 @Module({
   imports: [
@@ -36,6 +39,9 @@ import { IpMiddleware } from './common/middleware/ip/ip.middleware';
     AuthModule,
     ListingModule,
     AuditModule,
+    BookingModule,
+    PaymentModule,
+    ReviewModule,
   ],
   controllers: [AppController],
   providers: [

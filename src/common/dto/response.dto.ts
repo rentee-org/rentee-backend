@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class ApiResponse<T> {
+export class CustomApiResponse<T> {
   @ApiProperty()
   success: boolean;
 

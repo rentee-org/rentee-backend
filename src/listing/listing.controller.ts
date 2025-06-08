@@ -22,7 +22,7 @@ import { ApiBody, ApiConsumes, ApiOkResponse, ApiQuery } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { File } from 'multer';
 import { UploadService } from 'src/common/services/upload.service';
-import { ApiResponse } from 'src/common/dto/response.dto';
+import { CustomApiResponse } from 'src/common/dto/response.dto';
 import { UploadApiResponse } from 'cloudinary';
 import { Public } from 'src/auth/decorators/public.decorator';
 import { FilterListingDto } from './dto/filter-listing.dto';
@@ -110,12 +110,12 @@ export class ListingController {
   })
   @ApiOkResponse({
     description: 'Image uploaded successfully',
-    type: ApiResponse,
+    type: CustomApiResponse,
   })    
     
-  async uploadImage(@UploadedFile() file: File): Promise<ApiResponse<UploadApiResponse>> {
+  async uploadImage(@UploadedFile() file: File): Promise<CustomApiResponse<UploadApiResponse>> {
     const result = await this.uploadService.uploadImage(file);
-    let response: ApiResponse<UploadApiResponse> = {
+    let response: CustomApiResponse<UploadApiResponse> = {
       success: true,
       message: 'Image uploaded successfully',
       data: result,

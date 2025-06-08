@@ -6,7 +6,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { UserDto } from './dto/user.dto';
-import { ApiResponse } from 'src/common/dto/response.dto';
+import { CustomApiResponse } from 'src/common/dto/response.dto';
 
 @Injectable()
 export class UsersService {
@@ -113,7 +113,7 @@ export class UsersService {
     }
   }
 
-  update(id: string, updateUserDto: UpdateUserDto): Promise<ApiResponse<UpdateUserDto>> {
+  update(id: string, updateUserDto: UpdateUserDto): Promise<CustomApiResponse<UpdateUserDto>> {
     try {
       const user = this.usersRepository.findOne({ where: { id } });
       if (!user) throw new Error('User not found');
@@ -121,7 +121,7 @@ export class UsersService {
 
       // const { password, ...safeUser } = user;
     // Return the token and user information
-    let response = new ApiResponse<UpdateUserDto>();
+    let response = new CustomApiResponse<UpdateUserDto>();
     response.success = true;
     response.message = 'User updated successfully!';
     response.data = updateUserDto as UpdateUserDto;

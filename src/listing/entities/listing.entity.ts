@@ -1,4 +1,6 @@
+import { Booking } from 'src/booking/entities/booking.entity';
 import { BaseEntity } from 'src/config/base.entity';
+import { Review } from 'src/review/entities/review.entity';
 import { User } from 'src/users/entities/user.entity';
 import {
   Entity,
@@ -7,17 +9,19 @@ import {
   ManyToOne,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
 
 @Entity('listings')
 export class Listing extends BaseEntity {
-  // @PrimaryGeneratedColumn()
-  // id: number;
   @Column()
   title: string;
 
   @Column('text')
   description: string;
+
+  @Column('decimal')
+  pricePerDay: number;
 
   @Column('decimal', { precision: 10, scale: 2 })
   price: number;
@@ -31,7 +35,21 @@ export class Listing extends BaseEntity {
   @Column('text', { array: true, default: [] })
   images: string[];
 
-  @ManyToOne(() => User, (user) => user.id)
+  @Column()
+  location: string;
+
+  @Column({ default: true })
+  isAvailable: boolean;
+
+  // @ManyToOne(() => User, (user) => user.id)
+  // owner: User;
+
+  @ManyToOne(() => User, user => user.listings)
   owner: User;
 
+  @OneToMany(() => Booking, booking => booking.listing)
+  bookings: Booking[];
+
+  @OneToMany(() => Review, review => review.listing)
+  reviews: Review[];
 }

@@ -1,6 +1,9 @@
+import { Booking } from 'src/booking/entities/booking.entity';
 import { Role } from 'src/common/enums/role.enum';
 import { BaseEntity } from 'src/config/base.entity';
-import { Column, Entity } from 'typeorm';
+import { Listing } from 'src/listing/entities/listing.entity';
+import { Review } from 'src/review/entities/review.entity';
+import { Column, Entity, OneToMany } from 'typeorm';
 
 @Entity('users')
 export class User extends BaseEntity {
@@ -54,4 +57,13 @@ export class User extends BaseEntity {
 
   @Column({ nullable: true })
   lastLogin?: Date;
+
+  @OneToMany(() => Listing, listing => listing.owner)
+  listings: Listing[];
+
+  @OneToMany(() => Booking, booking => booking.renter)
+  bookings: Booking[];
+
+  @OneToMany(() => Review, review => review.renter)
+  reviews: Review[];
 }
