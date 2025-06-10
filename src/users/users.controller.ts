@@ -29,11 +29,13 @@ export class UsersController {
 
   @Get('me')
   getProfile(@Request() req) {
+    console.log('Fetching profile for userId:', req.user.userId);
+    // Assuming req.user.userId is set by the JwtAuthGuard
     return this.userService.getProfile(req.user.userId);
   }
 
   // This endpoint requires authentication but no specific role
-  @Post('change-password') 
+  @Post('change-password')
   async changePassword(@Body() changePasswordDto: any) {
     // return this.authService.changePassword(changePasswordDto);
     throw new NotImplementedException('Not implemented yet');
@@ -50,7 +52,6 @@ export class UsersController {
   async getAllUsers() {
     return this.userService.findAll();
   }
-  
 
   @Get(':id')
   findOne(@Param('id') id: string): Promise<UserDto | null> {

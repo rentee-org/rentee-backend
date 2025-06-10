@@ -16,7 +16,7 @@ export class UsersService {
   ) {}
 
   async getProfile(userId: string): Promise<UserDto | null> {
-    
+    console.log('Fetching profile for userId:', userId);
     return this.usersRepository.findOne({
       where: { id: userId.toString() },
       select: [
