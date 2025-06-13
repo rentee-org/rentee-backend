@@ -12,9 +12,23 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   // Enable CORS for production
   app.enableCors({
-    origin: process.env.FRONTEND_URL || true,
+    origin: process.env.NODE_ENV === 'production' 
+      ? process.env.FRONTEND_URL || 'https://your-production-frontend-url.com' 
+      : '*', // Allow all origins in development
     credentials: true,
   });
+  // app.enableCors({
+  //   // Allow requests from the local frontend URL or any origin if not set
+  //   // This is useful for development, but in production, you should specify the frontend URL
+  //   if (process.env.NODE_ENV === 'production') {
+  //     origin: process.env.FRONTEND_URL || 'https://your-production-frontend-url.com',
+  //   } else {
+  //     // In development, allow all origins
+  //     origin: '*',
+  //     // origin: process.env.FRONTEND_URL || true,
+  //   },
+  //   credentials: true,
+  // });
 
   // Set up global interceptors for auditing
   // Ensure AuditService is available
